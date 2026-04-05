@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Search, ShoppingBag } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/utils/supabase';
 
 export default function CustomersPage() {
+  const { role } = useAuth();
   const [customers, setCustomers] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -128,9 +130,11 @@ export default function CustomersPage() {
           <h1>Customer Management</h1>
           <p style={{ color: '#666' }}>View Customer directory from database.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowAdd(!showAdd)} disabled={isSubmitting}>
-          <Plus size={18} /> {showAdd ? 'Cancel' : 'Add Customer'}
-        </button>
+        {role === 'Admin' && (
+          <button className="btn btn-primary" onClick={() => setShowAdd(!showAdd)} disabled={isSubmitting}>
+            <Plus size={18} /> {showAdd ? 'Cancel' : 'Add Customer'}
+          </button>
+        )}
       </div>
       
       <div className="card">
@@ -155,7 +159,7 @@ export default function CustomersPage() {
               <th>Phone Number</th>
               <th>Address</th>
               <th>History</th>
-              <th>Actions</th>
+              {role === 'Admin' && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -195,12 +199,14 @@ export default function CustomersPage() {
                     <td><input type="text" value={editForm.phone_number || ''} onChange={e => setEditForm({...editForm, phone_number: e.target.value})} style={{ width: '150px' }} /></td>
                     <td><input type="text" value={editForm.address || ''} onChange={e => setEditForm({...editForm, address: e.target.value})} /></td>
                     <td>-</td>
-                    <td>
-                      <div className="flex gap-2">
-                        <button className="btn btn-success" onClick={handleSaveEdit} disabled={isSubmitting} style={{ padding: '4px 8px', fontSize: '11px', background: 'var(--color-success)', color: 'white' }}>Save</button>
-                        <button className="btn btn-outline" onClick={() => setEditingId(null)} style={{ padding: '4px 8px', fontSize: '11px' }}>Cancel</button>
-                      </div>
-                    </td>
+                    {role === 'Admin' && (
+                      <td>
+                        <div className="flex gap-2">
+                          <button className="btn btn-success" onClick={handleSaveEdit} disabled={isSubmitting} style={{ padding: '4px 8px', fontSize: '11px', background: 'var(--color-success)', color: 'white' }}>Save</button>
+                          <button className="btn btn-outline" onClick={() => setEditingId(null)} style={{ padding: '4px 8px', fontSize: '11px' }}>Cancel</button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 );
               }
@@ -216,12 +222,14 @@ export default function CustomersPage() {
                        <ShoppingBag size={12} /> View Records
                     </button>
                   </td>
-                  <td>
-                    <div className="flex gap-2">
-                      <button className="btn btn-outline" onClick={() => handleEditClick(cust)} style={{ padding: '4px 8px', fontSize: '11px' }}>Edit</button>
-                      <button className="btn btn-outline" onClick={() => handleDelete(cust.customer_id)} style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderColor: '#ff6b6b' }}>Delete</button>
-                    </div>
-                  </td>
+                  {role === 'Admin' && (
+                    <td>
+                      <div className="flex gap-2">
+                        <button className="btn btn-outline" onClick={() => handleEditClick(cust)} style={{ padding: '4px 8px', fontSize: '11px' }}>Edit</button>
+                        <button className="btn btn-outline" onClick={() => handleDelete(cust.customer_id)} style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderColor: '#ff6b6b' }}>Delete</button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               );
             })}

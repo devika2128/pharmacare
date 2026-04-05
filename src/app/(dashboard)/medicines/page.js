@@ -173,7 +173,7 @@ export default function MedicinesPage() {
           <h1>Medicine Inventory</h1>
           <p style={{ color: '#666' }}>Manage database medicine records and stock levels.</p>
         </div>
-        {role !== 'Staff' && (
+        {(role === 'Admin' || role === 'Pharmacist') && (
           <button className="btn btn-primary" onClick={() => setShowAdd(!showAdd)} disabled={isSubmitting}>
             <Plus size={18} /> {showAdd ? 'Cancel' : 'Add Medicine'}
           </button>
@@ -227,7 +227,7 @@ export default function MedicinesPage() {
               <th>Qty (Min)</th>
               <th>Substitutes DB IDs</th>
               <th>Status</th>
-              {role !== 'Staff' && <th>Actions</th>}
+              {(role === 'Admin' || role === 'Pharmacist') && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -286,7 +286,7 @@ export default function MedicinesPage() {
                          Req Rx
                        </label>
                     </td>
-                    {role !== 'Staff' && (
+                    {(role === 'Admin' || role === 'Pharmacist') && (
                       <td>
                         <div className="flex gap-2">
                           <button className="btn btn-success" onClick={handleSave} disabled={isSubmitting} style={{ padding: '4px 8px', fontSize: '11px', background: 'var(--color-success)', color: 'white' }}>Save</button>
@@ -319,11 +319,13 @@ export default function MedicinesPage() {
                      {med.substitutes ? <span style={{ fontSize: '11px', color: '#666' }}>IDs: {med.substitutes}</span> : <span style={{ fontSize: '11px', color: '#aaa' }}>None</span>}
                   </td>
                   <td><span className={`pill ${status.class}`}>{status.label}</span></td>
-                  {role !== 'Staff' && (
+                  {(role === 'Admin' || role === 'Pharmacist') && (
                     <td>
                       <div className="flex gap-2">
                         <button className="btn btn-outline" onClick={() => handleEditClick(med)} style={{ padding: '4px 8px', fontSize: '11px' }}>Edit</button>
-                        <button className="btn btn-outline" onClick={() => handleDelete(med.medicine_id)} style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderColor: '#ff6b6b' }}>Delete</button>
+                        {role === 'Admin' && (
+                          <button className="btn btn-outline" onClick={() => handleDelete(med.medicine_id)} style={{ padding: '4px 8px', fontSize: '11px', color: '#ff6b6b', borderColor: '#ff6b6b' }}>Delete</button>
+                        )}
                       </div>
                     </td>
                   )}
